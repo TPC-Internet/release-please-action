@@ -38,6 +38,16 @@ function getOptionalMultilineInput (name) {
   return core.getMultilineInput(name)
 }
 
+function getExtraFilesInput (extraFileLines) {
+  return extraFileLines.map(line => {
+    try {
+      return JSON.parse(line)
+    } catch (e) {
+      return line
+    }
+  })
+}
+
 function getManifestInput () {
   return {
     configFile: core.getInput('config-file') || CONFIG_FILE,
@@ -139,7 +149,7 @@ async function manifestInstance (github) {
   const changelogTypes = core.getInput('changelog-types') || undefined
   const changelogSections = changelogTypes && JSON.parse(changelogTypes)
   const versionFile = core.getInput('version-file') || undefined
-  const extraFiles = core.getMultilineInput('extra-files') || undefined
+  const extraFiles = getExtraFilesInput(core.getMultilineInput('extra-files'))
   const pullRequestTitlePattern = core.getInput('pull-request-title-pattern') || undefined
   const pullRequestHeader = core.getInput('pull-request-header') || undefined
   const draft = getOptionalBooleanInput('draft')
